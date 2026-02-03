@@ -1,44 +1,50 @@
-export const navigation = [
+export const /**
+ * @type {any}
+ */
+navigation = [
   {
-    group: "dashboard",
+    group: 'dashboard',
     items: [
       {
-        title: "Дашборды",
-        icon: "mdi-view-dashboard-outline",
-        route: "homePage",
+        title: 'Дашборды',
+        icon: 'mdi-view-dashboard-outline',
+        route: 'homePage',
       },
       {
-        title: "Статистика",
-        icon: "mdi-chart-arc",
-        route: "personalStatistic",
+        title: 'Статистика',
+        icon: 'mdi-chart-arc',
+        route: 'personalStatistic',
       },
     ],
   },
   {
-    group: "management",
+    group: 'managementClassRooms',
+    items: [{ title: 'Аудитории', icon: 'mdi-desktop-classic', route: 'classRooms' }],
+  },
+  {
+    group: 'managementStudents',
     items: [
-      { title: "Аудитории", icon: "mdi-desktop-classic", route: "classRooms" },
       {
-        title: "Студенты",
-        icon: "mdi-account-school-outline",
-        route: "students",
+        title: 'Студенты',
+        icon: 'mdi-account-school-outline',
+        route: 'students',
       },
       {
-        title: "Дисциплины",
-        icon: "mdi-note-multiple-outline",
-        route: "disciplines",
+        title: 'Дисциплины',
+        icon: 'mdi-note-multiple-outline',
+        route: 'disciplines',
       },
     ],
   },
   {
-    group: "resources",
+    group: 'resources',
     items: [
       {
-        title: "Домашние задания",
-        icon: "mdi-file-account-outline",
-        route: "homeworks",
+        title: 'Домашние задания',
+        icon: 'mdi-file-account-outline',
+        route: 'homeworks',
       },
-      { title: "Хранилище S3", icon: "mdi-file-cabinet", route: "s3Files" },
+      { title: 'Хранилище S3', icon: 'mdi-file-cabinet', route: 's3Files' },
     ],
   },
 ];

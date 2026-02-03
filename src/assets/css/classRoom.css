@@ -1,0 +1,173 @@
+/* classroom */
+.classroom-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+
+  transition: all 0.3s ease;
+  transform-origin: center center;
+  position: relative;
+}
+
+.classroom-group .btn-classroom {
+  min-width: 16.5px !important;
+  height: 16.5px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid transparent !important;
+}
+
+.classroom-group .btn-classroom:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.171) !important;
+  z-index: 20 !important;
+  position: relative !important;
+}
+
+.classroom-container:hover .classroom-group {
+  gap: 10px;
+  padding: 10px;
+  z-index: 10;
+}
+
+.classroom-group:hover {
+  gap: 10px;
+  padding: 10px;
+  z-index: 10;
+}
+
+.classroom-group:hover .btn-classroom:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.212) !important;
+}
+
+.classroom-container {
+  background-color: #212121;
+  border-radius: 10px;
+
+  transition: all 0.3s ease;
+  transform-origin: center center;
+  position: relative;
+}
+
+.classroom-container:hover {
+  transform: scale(2.22);
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.212) !important;
+}
+
+.classroom-container .classroom-placeholder {
+  display: none;
+
+  font-size: 8px;
+
+  transform: scale(0);
+  transition: all 0.3s;
+}
+
+.classroom-container:hover .classroom-placeholder {
+  display: block;
+  transform: scale(1);
+}
+
+/* combobox */
+.fixed-height-combobox {
+  max-height: 80px !important;
+}
+
+.fixed-height-combobox .v-input__control {
+  max-height: 80px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.fixed-height-combobox .v-input__control::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari */
+}
+
+.fixed-height-combobox .v-input__control {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE, Edge */
+}
+
+.fixed-height-combobox .v-input__control {
+  scroll-behavior: smooth;
+}
+
+/* card computer */
+.card-computer-custom {
+  border-radius: 20px !important;
+}
+
+.card-profile {
+  background-color: #212121;
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  box-shadow: 0 0 10px rgba(19, 19, 19, 0.788) !important;
+}
+
+.card-profile img {
+  padding: 5px;
+  width: 30px;
+  height: auto;
+  display: block;
+}
+
+.card-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  width: auto;
+  height: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(22, 22, 22, 0.253) !important;
+  background-color: #242424;
+}
+
+.card-lifestyle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+
+  width: 10px;
+  height: 10px;
+  animation: lifestyle-animation 2s ease-in-out infinite alternate;
+}
+
+.card-lifestyle.red {
+  border: 1px solid rgb(180, 42, 42);
+  background-color: rgb(180, 42, 42);
+  box-shadow: 0 0 10px rgba(170, 61, 61, 0.534) !important;
+}
+
+.card-lifestyle.green {
+  border: 1px solid rgb(42, 180, 83);
+  background-color: rgb(42, 180, 83);
+  box-shadow: 0 0 10px rgba(42, 180, 83, 0.534) !important;
+}
+
+@keyframes lifestyle-animation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+/* other */
+
+.border {
+  border: 1px solid white;
+}

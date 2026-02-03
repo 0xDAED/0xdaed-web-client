@@ -1,23 +1,23 @@
 // icons
-import "@mdi/font/css/materialdesignicons.css";
-import "@fortawesome/fontawesome-free/css/all.css";
+import '@mdi/font/css/materialdesignicons.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 // icons aliases
-import { aliases, mdi } from "vuetify/iconsets/mdi";
-import { fa } from "vuetify/iconsets/fa";
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import { fa } from 'vuetify/iconsets/fa';
 
 // styles
-import "vuetify/styles";
+import 'vuetify/styles';
 
-// Composables
-import { createVuetify } from "vuetify";
+// composables
+import { createVuetify } from 'vuetify';
 
 export default createVuetify({
   theme: {
-    defaultTheme: "system",
+    defaultTheme: 'system',
   },
   icons: {
-    defaultSet: "mdi",
+    defaultSet: 'mdi',
     aliases,
     sets: {
       mdi,

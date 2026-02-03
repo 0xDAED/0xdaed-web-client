@@ -33,16 +33,12 @@
           v-tooltip:end="'Настройки'"
           :to="{ name: 'accountSettings' }"
         />
-        <v-list-item
-          prepend-icon="mdi-exit-to-app"
-          title="Выход"
-          v-tooltip:end="'Выход'"
-        />
+        <v-list-item prepend-icon="mdi-exit-to-app" title="Выход" v-tooltip:end="'Выход'" />
       </v-list>
     </v-sheet>
   </v-navigation-drawer>
 </template>
 
 <script setup>
-import { navigation } from "@/constants/navigation";
+  import { navigation } from '@/constants/navigation';
 </script>
