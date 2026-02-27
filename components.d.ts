@@ -35,6 +35,7 @@ declare module 'vue' {
     VAsideMenu: typeof import('./src/components/features/navigation/VAsideMenu.vue')['default']
     VBranchSelect: typeof import('./src/components/features/navigation/VBranchSelect.vue')['default']
     VButton: typeof import('./src/components/ui/native/VIconButton.vue')['default']
+    VComputerBulkBar: typeof import('./src/components/blocks/computers/VComputerBulkBar.vue')['default']
     VComputerCard: typeof import('./src/components/blocks/computers/VComputerCard.vue')['default']
     VComputerMark: typeof import('./src/components/ui/computers/VComputerMark.vue')['default']
     VComputerRightPanel: typeof import('./src/components/blocks/computers/VComputerRightPanel.vue')['default']

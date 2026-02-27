@@ -12,6 +12,9 @@ export const useComputersStore = defineStore('computers', {
     loading: false,
     error: null,
 
+    selectedPcIds: [],
+    bulkMode: false,
+
     ws: null,
     wsConnected: false,
     reconnectTimer: null,
@@ -335,6 +338,32 @@ export const useComputersStore = defineStore('computers', {
       const n = (name || '').trim()
       const cur = this.blockedRulesByPc[pcId] || []
       this.blockedRulesByPc[pcId] = cur.filter(x => x !== n)
+    },
+    toggleBulkMode() {
+      this.bulkMode = !this.bulkMode
+      if (!this.bulkMode) this.selectedPcIds = []
+    },
+
+    isSelected(pcId) {
+      return this.selectedPcIds.includes(pcId)
+    },
+
+    toggleSelected(pcId) {
+      if (this.selectedPcIds.includes(pcId)) {
+        this.selectedPcIds = this.selectedPcIds.filter(x => x !== pcId)
+      } else {
+        this.selectedPcIds = [...this.selectedPcIds, pcId]
+      }
+    },
+
+    selectMany(pcIds) {
+      const set = new Set(this.selectedPcIds)
+      pcIds.forEach(id => set.add(id))
+      this.selectedPcIds = Array.from(set)
+    },
+
+    clearSelection() {
+      this.selectedPcIds = []
     },
   },
 })
