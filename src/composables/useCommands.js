@@ -24,7 +24,18 @@ export function useComputerCommands(computerIdRef) {
 
   const toggleBlock = proc => (proc.blocked ? unblockByName(proc.name) : blockByName(proc.name))
 
+  const getBlockedList = () => create('GET_BLOCKED_LIST', {})
+
   const quick = type => create(type, {})
 
-  return { create, killProcess, requestProcesses, toggleBlock, quick }
+  return {
+    create,
+    killProcess,
+    requestProcesses,
+    toggleBlock,
+    getBlockedList,
+    blockByName,
+    unblockByName,
+    quick,
+  }
 }

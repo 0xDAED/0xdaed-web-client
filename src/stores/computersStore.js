@@ -8,6 +8,7 @@ const WS_URL =
 export const useComputersStore = defineStore('computers', {
   state: () => ({
     computers: [],
+    blockedRulesByPc: {},
     loading: false,
     error: null,
 
@@ -187,12 +188,20 @@ export const useComputersStore = defineStore('computers', {
 
       const tasks = this.computers[idx].tasks || []
       const tIdx = tasks.findIndex(t => t.id === cmdId)
+
+      const existingType = tIdx !== -1 ? tasks[tIdx].type : undefined
+      const cmdType = existingType || ev.command_type
+
       if (tIdx === -1) {
         tasks.unshift({
           id: cmdId,
-          type: ev.command_type,
+          type: cmdType,
           status: ev.status,
           createdAtTs: ev.ts || Date.now() / 1000,
+          stdout: ev.stdout,
+          stderr: ev.stderr,
+          exitCode: ev.exit_code,
+          finishedAtTs: ev.finished_at_ts,
         })
       } else {
         tasks[tIdx] = {
@@ -200,10 +209,29 @@ export const useComputersStore = defineStore('computers', {
           status: ev.status,
           exitCode: ev.exit_code,
           finishedAtTs: ev.finished_at_ts,
+          stdout: ev.stdout ?? tasks[tIdx].stdout,
+          stderr: ev.stderr ?? tasks[tIdx].stderr,
         }
       }
 
       this.computers[idx] = { ...this.computers[idx], tasks: [...tasks] }
+
+      if (ev.status === 'completed' && cmdType === 'GET_BLOCKED_LIST') {
+        const stdout = ev.stdout ?? (tIdx !== -1 ? tasks[tIdx].stdout : null) ?? ''
+        try {
+          const arr = JSON.parse(stdout || '[]')
+          this.setBlockedRules(pcId, Array.isArray(arr) ? arr : [])
+        } catch (e) {
+          console.error('GET_BLOCKED_LIST parse failed:', stdout, e)
+        }
+      }
+
+      if (
+        ev.status === 'completed' &&
+        (cmdType === 'BLOCK_PROCESS_NAME' || cmdType === 'UNBLOCK_PROCESS_NAME')
+      ) {
+        this.createCommand(pcId, 'GET_BLOCKED_LIST', {}).catch(() => {})
+      }
     },
 
     subscribe() {
@@ -290,6 +318,23 @@ export const useComputersStore = defineStore('computers', {
         createdAtTs: Math.floor(Date.now() / 1000),
       })
       return created
+    },
+
+    setBlockedRules(pcId, rules) {
+      this.blockedRulesByPc[pcId] = rules
+    },
+
+    addBlockedRule(pcId, name) {
+      const n = (name || '').trim()
+      if (!n) return
+      const cur = this.blockedRulesByPc[pcId] || []
+      if (!cur.includes(n)) this.blockedRulesByPc[pcId] = [...cur, n].sort()
+    },
+
+    removeBlockedRule(pcId, name) {
+      const n = (name || '').trim()
+      const cur = this.blockedRulesByPc[pcId] || []
+      this.blockedRulesByPc[pcId] = cur.filter(x => x !== n)
     },
   },
 })

@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, ref } from 'vue'
+  import { computed, ref, onMounted, watch } from 'vue'
   import {
     LaptopMinimal,
     PanelRightClose,
@@ -32,6 +32,28 @@
 
   const computerId = computed(() => props.computer.id)
   const cmd = useComputerCommands(computerId)
+
+  const blockedRules = computed(() => store.blockedRulesByPc?.[computerId.value] || [])
+
+  const processes = computed(() => props.computer.processList || [])
+
+  const mergedProcesses = computed(() => {
+    const live = processes.value || []
+    const liveNames = new Set(live.map(p => (p.name || '').toLowerCase()))
+    const extra = blockedRules.value
+      .filter(name => name && !liveNames.has(String(name).toLowerCase()))
+      .map(name => ({
+        pid: -1,
+        name,
+        status: 'not_running',
+        blocked: true,
+        cpu: 0,
+        memoryMb: 0,
+        _virtual: true,
+      }))
+
+    return [...live, ...extra]
+  })
 
   const activeTab = ref('processes')
 
@@ -91,12 +113,44 @@
     }
   }
 
-  const processes = computed(() => props.computer.processList || [])
-  const sortedProcesses = computed(() => sortProcesses(processes.value))
+  const sortedProcesses = computed(() => sortProcesses(mergedProcesses.value))
 
-  const stopProcess = proc => cmd.killProcess(proc)
+  const loadBlockedRules = async () => {
+    try {
+      await cmd.getBlockedList()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const stopProcess = proc => {
+    if (!proc?.pid) return
+    return cmd.killProcess(proc)
+  }
   const refreshProcesses = () => cmd.requestProcesses()
-  const toggleProcessBlock = proc => cmd.toggleBlock(proc)
+  const toggleProcessBlock = async proc => {
+    const name = (proc?.name || '').trim()
+    if (!name) return
+
+    // оптимистично
+    if (proc?._virtual || proc?.blocked) {
+      store.removeBlockedRule?.(computerId.value, name)
+    } else {
+      store.addBlockedRule?.(computerId.value, name)
+    }
+
+    try {
+      if (proc?._virtual) await cmd.unblockByName(name)
+      else await cmd.toggleBlock(proc)
+    } catch (e) {
+      // откат при ошибке
+      await loadBlockedRules()
+      throw e
+    } finally {
+      // синхронизируемся с агентом
+      await cmd.getBlockedList()
+    }
+  }
 
   const taskQueue = computed(() =>
     (props.computer.tasks || []).filter(t => t.status !== 'completed' && t.status !== 'failed')
@@ -147,6 +201,9 @@
   const statusColor = computed(() =>
     props.computer.computerActive ? 'text-success' : 'text-error'
   )
+
+  onMounted(loadBlockedRules)
+  watch(() => computerId.value, loadBlockedRules)
 </script>
 
 <template>
@@ -226,6 +283,37 @@
         </div>
 
         <div v-if="activeTab === 'processes'" class="space-y-3">
+          <div class="card bg-base-200 rounded-box p-4">
+            <div class="flex items-center justify-between">
+              <h4 class="flex items-center gap-2 text-base font-bold">
+                <Lock class="h-4 w-4" />
+                Заблокированные правила
+              </h4>
+              <button class="btn btn-xs btn-ghost" @click="loadBlockedRules">
+                <RefreshCw class="h-3 w-3" />
+              </button>
+            </div>
+
+            <div v-if="blockedRules.length === 0" class="mt-2 text-sm opacity-70">
+              Нет правил блокировки
+            </div>
+
+            <div v-else class="mt-3 flex flex-wrap gap-2">
+              <div
+                v-for="name in blockedRules"
+                :key="name"
+                class="badge badge-error badge-outline gap-2 p-4"
+              >
+                <span class="text-xs font-medium">{{ name }}</span>
+                <button
+                  class="btn btn-xs btn-success"
+                  @click="toggleProcessBlock({ name, blocked: true, _virtual: true })"
+                >
+                  <Unlock class="h-2.5 w-2.5" />
+                </button>
+              </div>
+            </div>
+          </div>
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold">Запущенные процессы</h3>
             <div class="flex items-center gap-2">
