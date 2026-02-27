@@ -1,14 +1,17 @@
 <script setup>
-  import { computed, ref } from 'vue'
+  import { computed, toRef } from 'vue'
   import '@/assets/styles/computerDashboard.css'
 
   import VRadialProgress from '@/components/ui/computers/VRadialProgress.vue'
   import VSelectComputerIcon from './VSelectComputerIcon.vue'
   import VComputerRightPanel from './VComputerRightPanel.vue'
 
-  import { LaptopMinimal, Monitor, Worm, Cpu, MemoryStick, HardDrive } from 'lucide-vue-next'
+  import { Cpu, MemoryStick, HardDrive } from 'lucide-vue-next'
 
-  import { createIconVariants } from '@/utils/icons'
+  import { useComputerPanel } from '@/composables/computers/card/useComputerPanel'
+  import { useComputerStatus } from '@/composables/computers/card/useComputerStatus'
+  import { useDeviceIcons } from '@/composables/computers/card/useDeviceIcons'
+  import { useBulkToggle } from '@/composables/computers/card/useBulkToggle'
 
   const props = defineProps({
     computer: {
@@ -38,30 +41,20 @@
 
   const emit = defineEmits(['save', 'toggleSelected'])
 
-  const isPanelActive = ref(false)
+  const computerRef = toRef(props, 'computer')
 
-  const togglePanel = () => {
-    isPanelActive.value = !isPanelActive.value
-  }
+  const { isPanelActive, closePanel, togglePanel } = useComputerPanel()
+  const { statusColor } = useComputerStatus(computerRef)
+  const { deviceIcons } = useDeviceIcons()
 
-  const closePanel = () => {
-    isPanelActive.value = false
-  }
-
-  const statusColor = computed(() => {
-    return props.computer.computerActive ? 'green' : 'red'
+  const { onToggleSelect } = useBulkToggle({
+    emit,
+    getPcId: () => props.computer.id,
   })
 
-  const deviceIcons = ref([
-    ...createIconVariants(LaptopMinimal, 'Laptop', 1),
-    ...createIconVariants(Monitor, 'Monitor', 5),
-    ...createIconVariants(Worm, 'Worm', 9),
-  ])
-
-  const onToggleSelect = e => {
-    e?.stopPropagation?.()
-    emit('toggleSelected', props.computer.id)
-  }
+  const cpu = computed(() => props.computer?.cpu ?? 0)
+  const ozu = computed(() => props.computer?.ozu ?? 0)
+  const disk = computed(() => props.computer?.hard_drive ?? 0)
 </script>
 
 <template>
@@ -109,26 +102,16 @@
         </div>
 
         <div class="mx-auto mt-2 grid grid-cols-3 items-center justify-center gap-3">
-          <VRadialProgress :progress="computer.cpu" :active="computer.computerActive" type="ЦПУ">
-            <template #icon>
-              <Cpu />
-            </template>
+          <VRadialProgress :progress="cpu" :active="computer.computerActive" type="ЦПУ">
+            <template #icon><Cpu /></template>
           </VRadialProgress>
 
-          <VRadialProgress :progress="computer.ozu" :active="computer.computerActive" type="ОЗУ">
-            <template #icon>
-              <MemoryStick />
-            </template>
+          <VRadialProgress :progress="ozu" :active="computer.computerActive" type="ОЗУ">
+            <template #icon><MemoryStick /></template>
           </VRadialProgress>
 
-          <VRadialProgress
-            :progress="computer.hard_drive"
-            :active="computer.computerActive"
-            type="ДИСК"
-          >
-            <template #icon>
-              <HardDrive />
-            </template>
+          <VRadialProgress :progress="disk" :active="computer.computerActive" type="ДИСК">
+            <template #icon><HardDrive /></template>
           </VRadialProgress>
         </div>
 
